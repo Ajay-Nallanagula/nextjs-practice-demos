@@ -1,9 +1,11 @@
 # Next.js Comprehensive Guide
 
 ## Table of Contents
+
 1. [What is Next.js](#what-is-nextjs)
 2. [Next.js vs React](#nextjs-vs-react)
-3. [Server-Side Rendering vs Client-Side Rendering](#server-side-rendering-vs-client-side-rendering)
+3. [Creating a Next.js Project](#creating-a-nextjs-project)
+4. [Server-Side Rendering vs Client-Side Rendering](#server-side-rendering-vs-client-side-rendering)
 4. [Rendering Strategies](#rendering-strategies)
 5. [Routing in Next.js](#routing-in-nextjs)
 6. [File Structure & Reserved Files](#file-structure--reserved-files)
@@ -21,7 +23,9 @@
 ## What is Next.js
 
 ### Definition
+
 Next.js is a **React framework** for building modern web applications with:
+
 - Built-in server-side rendering (SSR)
 - Static site generation (SSG)
 - Client-side rendering (CSR)
@@ -30,6 +34,7 @@ Next.js is a **React framework** for building modern web applications with:
 - File-based routing
 
 ### Key Features
+
 - 🚀 **Fast Performance** - Automatic optimization
 - 📱 **Full-Stack** - Frontend + Backend in one framework
 - 🔄 **Flexible Rendering** - SSR, SSG, CSR, ISR
@@ -38,31 +43,34 @@ Next.js is a **React framework** for building modern web applications with:
 - 🧩 **Components** - React components out of the box
 
 ### Official Documentation
+
 📚 https://nextjs.org/docs
 
 ---
 
 ## Next.js vs React
 
-| Aspect | React | Next.js |
-|--------|-------|---------|
-| **Type** | UI Library | Full Framework |
-| **Routing** | Manual (React Router) | Built-in (File-based) |
-| **Server Rendering** | Not built-in | Built-in (SSR/SSG) |
-| **Backend** | Not included | API routes included |
-| **Optimization** | Manual | Automatic |
-| **Learning Curve** | Easier for beginners | More features to learn |
-| **Setup** | Create-react-app | `npx create-next-app` |
-| **Performance** | Good | Optimized by default |
-| **SEO** | Manual setup required | Built-in support |
+| Aspect               | React                 | Next.js                |
+| -------------------- | --------------------- | ---------------------- |
+| **Type**             | UI Library            | Full Framework         |
+| **Routing**          | Manual (React Router) | Built-in (File-based)  |
+| **Server Rendering** | Not built-in          | Built-in (SSR/SSG)     |
+| **Backend**          | Not included          | API routes included    |
+| **Optimization**     | Manual                | Automatic              |
+| **Learning Curve**   | Easier for beginners  | More features to learn |
+| **Setup**            | Create-react-app      | `npx create-next-app`  |
+| **Performance**      | Good                  | Optimized by default   |
+| **SEO**              | Manual setup required | Built-in support       |
 
 ### When to Use React?
+
 - Simple UI components
 - SPA (Single Page Application)
 - Real-time apps (chat, dashboards)
 - Maximum flexibility needed
 
 ### When to Use Next.js?
+
 - Full-stack applications
 - SEO is important
 - Need for SSR/SSG
@@ -71,11 +79,577 @@ Next.js is a **React framework** for building modern web applications with:
 
 ---
 
+## Creating a Next.js Project
+
+### Step 1: Create New Project
+
+**Using create-next-app (Recommended):**
+
+```bash
+npx create-next-app@latest my-app
+```
+
+**Interactive Setup Prompts:**
+```
+✔ Would you like to use TypeScript? … No / Yes
+✔ Would you like to use ESLint? … No / Yes
+✔ Would you like to use Tailwind CSS? … No / Yes
+✔ Would you like your code inside a `src/` directory? … No / Yes
+✔ Would you like to use App Router? … No / Yes (Choose YES)
+✔ Would you like to use Turbopack for next dev? … No / Yes
+✔ Would you like to customize the import alias? … No / Yes
+```
+
+**Navigate to project:**
+```bash
+cd my-app
+npm run dev
+```
+
+**Open in browser:** http://localhost:3000
+
+---
+
+### Step 2: Project Structure
+
+**Default generated files:**
+
+```
+my-app/
+├── app/                          # App Router directory (main app code)
+│   ├── favicon.ico              # Favicon for browser tab
+│   ├── globals.css              # Global styles for entire app
+│   ├── layout.js                # Root layout wrapping all pages
+│   ├── page.js                  # Home page component (/)
+│   └── page.module.css          # CSS module for page.js
+├── public/                       # Static assets (images, fonts, etc)
+│   ├── images/
+│   ├── fonts/
+│   └── (other static files)
+├── .gitignore                   # Git ignore file
+├── .eslintrc.json              # ESLint configuration
+├── next.config.js              # Next.js configuration
+├── package.json                # Project dependencies & scripts
+├── package-lock.json           # Lock file for exact versions
+├── tsconfig.json              # TypeScript configuration (if using TS)
+├── jsconfig.json              # JavaScript configuration (if not using TS)
+├── README.md                  # Project documentation
+└── node_modules/              # Dependencies (don't commit this)
+```
+
+---
+
+### File Descriptions & Importance
+
+#### **Root Level Files**
+
+##### `package.json`
+**Purpose:** Defines project metadata and dependencies  
+**Importance:** ⭐⭐⭐⭐⭐ CRITICAL
+- Lists all npm packages your project needs
+- Contains npm scripts for running dev/build/production
+- Specifies Node.js version compatibility
+
+**Example:**
+```json
+{
+  "name": "my-nextjs-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",           // Start dev server
+    "build": "next build",        // Build for production
+    "start": "next start",        // Start production server
+    "lint": "next lint"           // Run ESLint
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "next": "^14.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}
+```
+
+---
+
+##### `next.config.js`
+**Purpose:** Configure Next.js behavior  
+**Importance:** ⭐⭐⭐⭐ HIGH
+- Customize webpack, images, redirects, rewrites
+- Add environment variables
+- Configure build optimization
+- Set API routes configuration
+
+**Example:**
+```javascript
+// next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    domains: ['example.com'],  // Allow external image domains
+  },
+  redirects: async () => [
+    {
+      source: '/old-page',
+      destination: '/new-page',
+      permanent: true,
+    },
+  ],
+  env: {
+    CUSTOM_VAR: 'value',  // Environment variables
+  },
+};
+
+module.exports = nextConfig;
+```
+
+---
+
+##### `tsconfig.json` or `jsconfig.json`
+**Purpose:** Configure TypeScript or JavaScript compiler  
+**Importance:** ⭐⭐⭐ MEDIUM
+- Set path aliases for imports
+- Configure module resolution
+- Enable/disable TypeScript features
+
+**Example (jsconfig.json):**
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],              // Allow @/ imports
+      "@components/*": ["./components/*"]
+    },
+    "baseUrl": "."
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+}
+```
+
+---
+
+##### `.eslintrc.json`
+**Purpose:** Configure code linting rules  
+**Importance:** ⭐⭐⭐ MEDIUM
+- Enforce code quality standards
+- Catch common mistakes
+- Maintain consistent code style
+
+**Example:**
+```json
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "react/no-unescaped-entities": "off"
+  }
+}
+```
+
+---
+
+##### `.gitignore`
+**Purpose:** Tell Git which files to ignore  
+**Importance:** ⭐⭐⭐⭐ HIGH
+- Prevent sensitive files being committed
+- Avoid committing dependencies
+- Keep repository clean
+
+**Default contents:**
+```
+node_modules/
+.next/
+.env.local
+.env.*.local
+.vercel/
+```
+
+---
+
+##### `README.md`
+**Purpose:** Project documentation  
+**Importance:** ⭐⭐⭐ MEDIUM
+- Explains what the project does
+- Setup instructions
+- Usage examples
+
+---
+
+#### **App Directory Files**
+
+##### `app/layout.js`
+**Purpose:** Root layout component  
+**Importance:** ⭐⭐⭐⭐⭐ CRITICAL
+- Wraps all pages in your application
+- Define HTML structure
+- Import global CSS
+- Add header/footer/navigation
+- Server component by default
+
+**Example:**
+```jsx
+// app/layout.js
+import './globals.css';
+
+export const metadata = {
+  title: 'My App',
+  description: 'Generated by create next app',
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <header>Navigation here</header>
+        {children}
+        <footer>Footer here</footer>
+      </body>
+    </html>
+  );
+}
+```
+
+---
+
+##### `app/page.js`
+**Purpose:** Home page component  
+**Importance:** ⭐⭐⭐⭐⭐ CRITICAL
+- Renders at root URL (/)
+- First page users see
+- Entry point for your application
+
+**Example:**
+```jsx
+// app/page.js
+export default function Home() {
+  return (
+    <main>
+      <h1>Welcome to Next.js!</h1>
+      <p>Get started by editing app/page.js</p>
+    </main>
+  );
+}
+```
+
+---
+
+##### `app/globals.css`
+**Purpose:** Global CSS styles  
+**Importance:** ⭐⭐⭐⭐ HIGH
+- Styles applied to entire application
+- Reset default browser styles
+- Define global variables/themes
+- Imported in layout.js
+
+**Example:**
+```css
+/* app/globals.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+  background-color: #f5f5f5;
+}
+
+html {
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+}
+```
+
+---
+
+##### `app/page.module.css`
+**Purpose:** CSS module for page.js  
+**Importance:** ⭐⭐⭐⭐ HIGH
+- Scoped styles for page.js only
+- Prevents CSS conflicts
+- Better organization and maintenance
+
+**Example:**
+```css
+/* app/page.module.css */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: #666;
+}
+```
+
+---
+
+##### `app/favicon.ico`
+**Purpose:** Browser tab icon  
+**Importance:** ⭐⭐⭐ MEDIUM
+- Displays in browser tab
+- Bookmarks and favorites
+- Brand visibility
+
+---
+
+#### **Public Directory**
+
+##### `public/`
+**Purpose:** Store static assets  
+**Importance:** ⭐⭐⭐⭐ HIGH
+- Images, fonts, documents
+- Served directly without processing
+- Accessible via `/` prefix
+
+**Structure:**
+```
+public/
+├── images/
+│   ├── logo.png
+│   └── hero.jpg
+├── fonts/
+│   └── custom-font.woff2
+└── documents/
+    └── privacy-policy.pdf
+```
+
+**Usage in components:**
+```jsx
+import Image from 'next/image';
+
+export default function Home() {
+  return <Image src="/images/logo.png" alt="Logo" width={200} height={100} />;
+}
+```
+
+---
+
+#### **node_modules Directory**
+
+##### `node_modules/`
+**Purpose:** Installed npm packages  
+**Importance:** ⭐⭐⭐⭐⭐ CRITICAL (for running app, not for version control)
+- Contains all dependencies
+- Created by `npm install`
+- Should be in `.gitignore`
+- Can be very large (don't commit)
+
+**Commands:**
+```bash
+npm install          # Install dependencies from package.json
+npm install react    # Install specific package
+npm update          # Update all packages
+npm uninstall react # Remove package
+```
+
+---
+
+### Starting Development
+
+#### Development Server
+```bash
+npm run dev
+```
+- Starts server at http://localhost:3000
+- Hot reload on file changes
+- Shows compilation errors in browser
+- Best for development
+
+#### Build for Production
+```bash
+npm run build
+```
+- Compiles application into optimized bundles
+- Analyzes and optimizes code
+- Checks for errors
+- Creates `.next` folder
+
+#### Production Server
+```bash
+npm start
+```
+- Runs optimized production build
+- Requires `npm run build` first
+- Faster and more efficient
+- For deployment
+
+---
+
+### Important Configuration Files Explained
+
+#### Environment Variables
+
+**Create `.env.local`:**
+```bash
+# Don't commit this file!
+DATABASE_URL=postgresql://user:password@localhost/db
+API_KEY=secret_key_here
+NEXT_PUBLIC_API_URL=https://api.example.com  # Visible to browser
+```
+
+**Usage in code:**
+```jsx
+// Server Component
+const dbUrl = process.env.DATABASE_URL;  // Secret
+
+// Client Component
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;  // Public
+```
+
+---
+
+#### Vercel Configuration (For Deployment)
+
+**vercel.json** (optional):
+```json
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url"
+  }
+}
+```
+
+---
+
+### Project Setup Best Practices
+
+✅ **DO:**
+- Run `npm install` to install all dependencies
+- Add `.env.local` for sensitive keys
+- Keep `node_modules/` in `.gitignore`
+- Commit `package-lock.json`
+- Add `next.config.js` customizations
+- Configure `jsconfig.json` path aliases
+- Add ESLint rules for code quality
+
+❌ **DON'T:**
+- Commit `node_modules/`
+- Commit `.env.local`
+- Modify `next.config.js` without understanding
+- Delete auto-generated files
+- Ignore TypeScript/ESLint errors
+
+---
+
+### Common Project Structure (Expanded)
+
+```
+my-app/
+├── app/                        # Main app directory
+│   ├── api/                    # API routes
+│   │   └── auth/
+│   │       └── route.js
+│   ├── blog/                   # Blog routes
+│   │   ├── page.js
+│   │   ├── layout.js
+│   │   └── [slug]/
+│   │       └── page.js
+│   ├── components/             # Page-specific components
+│   │   └── Header.jsx
+│   ├── globals.css
+│   ├── layout.js
+│   ├── page.js
+│   └── page.module.css
+├── components/                 # Reusable components
+│   ├── Button.jsx
+│   ├── Card.jsx
+│   └── Navigation.jsx
+├── lib/                        # Utility functions
+│   ├── api.js
+│   ├── database.js
+│   └── utils.js
+├── public/                     # Static files
+│   ├── images/
+│   ├── fonts/
+│   └── favicon.ico
+├── styles/                     # Global stylesheets
+│   └── variables.css
+├── .env.local                  # Local environment (don't commit)
+├── .eslintrc.json
+├── .gitignore
+├── next.config.js
+├── package.json
+├── package-lock.json
+├── README.md
+└── tsconfig.json (if using TypeScript)
+```
+
+---
+
+### First Steps After Project Creation
+
+**1. Explore the project:**
+```bash
+npm run dev
+# Open http://localhost:3000
+# See the default Next.js welcome page
+```
+
+**2. Edit home page:**
+```jsx
+// app/page.js
+export default function Home() {
+  return <h1>Hello World!</h1>;
+}
+```
+
+**3. Create a new page:**
+```bash
+# Create app/about/page.js
+mkdir app/about
+touch app/about/page.js
+```
+
+```jsx
+// app/about/page.js
+export default function About() {
+  return <h1>About Page</h1>;
+}
+```
+Navigate to http://localhost:3000/about
+
+**4. Add global styles:**
+```css
+/* app/globals.css */
+body {
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+```
+
+**5. Create components directory:**
+```bash
+mkdir components
+touch components/Navigation.jsx
+```
+
+---
+
 ## Server-Side Rendering vs Client-Side Rendering
 
 ### Server-Side Rendering (SSR)
 
 **How it works:**
+
 ```
 1. Client requests URL
 2. Server renders React components
@@ -90,23 +664,24 @@ Next.js is a **React framework** for building modern web applications with:
 ✅ Better SEO (HTML content available)  
 ✅ Better for users with slow devices  
 ✅ Content available without JavaScript  
-✅ More secure (sensitive data stays on server)  
+✅ More secure (sensitive data stays on server)
 
 **Disadvantages:**
 ❌ Higher server load  
 ❌ Slower Time to First Byte (TTFB)  
 ❌ Not good for real-time updates  
-❌ Full page refresh on navigation  
+❌ Full page refresh on navigation
 
 **Example:**
+
 ```jsx
 // app/page.js (Server Component by default)
 export default async function Home() {
-  const data = await fetch('https://api.example.com/data', {
+  const data = await fetch("https://api.example.com/data", {
     // This fetch only runs on server
   });
   const result = await data.json();
-  
+
   return <div>{result.title}</div>;
 }
 ```
@@ -116,6 +691,7 @@ export default async function Home() {
 ### Client-Side Rendering (CSR)
 
 **How it works:**
+
 ```
 1. Client requests URL
 2. Server sends minimal HTML + JavaScript
@@ -130,27 +706,30 @@ export default async function Home() {
 ✅ Real-time interactivity  
 ✅ Lower server load  
 ✅ Great for dynamic content  
-✅ Works offline  
+✅ Works offline
 
 **Disadvantages:**
 ❌ Slow initial page load  
 ❌ Poor SEO (no content in HTML)  
 ❌ Blank page until JS loads  
-❌ Requires JavaScript  
+❌ Requires JavaScript
 
 **Example:**
+
 ```jsx
 // app/page.js
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
     // This runs in browser
-    fetch('/api/data').then(res => res.json()).then(setData);
+    fetch("/api/data")
+      .then((res) => res.json())
+      .then(setData);
   }, []);
 
   return <div>{data?.title}</div>;
@@ -162,8 +741,9 @@ export default function Home() {
 ## Rendering Strategies
 
 ### 1. Static Generation (SSG)
+
 **When:** Build time (npm run build)  
-**Best for:** Content that doesn't change frequently  
+**Best for:** Content that doesn't change frequently
 
 ```jsx
 // app/blog/[slug]/page.js
@@ -175,7 +755,7 @@ export default async function PostPage({ params }) {
 // Generate static pages at build time
 export async function generateStaticParams() {
   const posts = await getAllPosts();
-  return posts.map(post => ({ slug: post.slug }));
+  return posts.map((post) => ({ slug: post.slug }));
 }
 ```
 
@@ -184,8 +764,9 @@ export async function generateStaticParams() {
 ---
 
 ### 2. Server-Side Rendering (SSR)
+
 **When:** Every request  
-**Best for:** Dynamic content that changes per user/request  
+**Best for:** Dynamic content that changes per user/request
 
 ```jsx
 // app/dashboard/page.js (no 'use client')
@@ -202,15 +783,20 @@ export default async function Dashboard() {
 ---
 
 ### 3. Incremental Static Regeneration (ISR)
+
 **When:** Build time + periodic updates  
-**Best for:** Content that updates occasionally  
+**Best for:** Content that updates occasionally
 
 ```jsx
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export default async function ProductPage({ params }) {
   const product = await getProduct(params.id);
-  return <div>{product.name} - ${product.price}</div>;
+  return (
+    <div>
+      {product.name} - ${product.price}
+    </div>
+  );
 }
 ```
 
@@ -219,19 +805,16 @@ export default async function ProductPage({ params }) {
 ---
 
 ### 4. Client-Side Rendering (CSR)
+
 **When:** In browser  
-**Best for:** Interactive, real-time features  
+**Best for:** Interactive, real-time features
 
 ```jsx
-'use client';
+"use client";
 
 export default function Counter() {
   const [count, setCount] = useState(0);
-  return (
-    <button onClick={() => setCount(count + 1)}>
-      Count: {count}
-    </button>
-  );
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
 }
 ```
 
@@ -244,6 +827,7 @@ export default function Counter() {
 ### File-Based Routing
 
 **URL Structure:**
+
 ```
 app/
   page.js              → /
@@ -273,11 +857,12 @@ app/
 ### Dynamic Routes (Slugs)
 
 **Using [slug]:**
+
 ```jsx
 // app/blog/[slug]/page.js
 export default async function BlogPost({ params }) {
   const { slug } = params;
-  
+
   return (
     <article>
       <h1>Post: {slug}</h1>
@@ -288,6 +873,7 @@ export default async function BlogPost({ params }) {
 ```
 
 **Generate metadata for dynamic routes:**
+
 ```jsx
 export async function generateMetadata({ params }) {
   const post = await getPost(params.slug);
@@ -303,6 +889,7 @@ export async function generateMetadata({ params }) {
 ### Page-Based Routing vs App-Based Routing
 
 ### Pages Router (Old - pages/ directory)
+
 ```
 pages/
   index.js             → /
@@ -315,14 +902,15 @@ pages/
 ```
 
 **Example:**
+
 ```jsx
 // pages/blog/[slug].js
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 
 export default function BlogPost() {
   const router = useRouter();
   const { slug } = router.query;
-  
+
   return <h1>Post: {slug}</h1>;
 }
 
@@ -338,6 +926,7 @@ export async function getStaticProps({ params }) {
 ---
 
 ### App Router (New - app/ directory) ⭐ Recommended
+
 ```
 app/
   page.js              → /
@@ -351,29 +940,30 @@ app/
 ```
 
 **Example:**
+
 ```jsx
 // app/blog/[slug]/page.js
 export default async function BlogPost({ params }) {
   const { slug } = params;
-  
+
   return <h1>Post: {slug}</h1>;
 }
 
 export async function generateStaticParams() {
-  return (await getAllPosts()).map(p => ({ slug: p.slug }));
+  return (await getAllPosts()).map((p) => ({ slug: p.slug }));
 }
 ```
 
 ### Differences
 
-| Feature | Pages Router | App Router |
-|---------|--------------|-----------|
-| **Directory** | pages/ | app/ |
-| **Server Components** | Opt-in | Default |
-| **Data Fetching** | getStaticProps, getServerSideProps | async/await in components |
-| **API Routes** | pages/api/ | app/api/ |
-| **Layouts** | Per-page | Shared across routes |
-| **Status** | Legacy | Recommended ✅ |
+| Feature               | Pages Router                       | App Router                |
+| --------------------- | ---------------------------------- | ------------------------- |
+| **Directory**         | pages/                             | app/                      |
+| **Server Components** | Opt-in                             | Default                   |
+| **Data Fetching**     | getStaticProps, getServerSideProps | async/await in components |
+| **API Routes**        | pages/api/                         | app/api/                  |
+| **Layouts**           | Per-page                           | Shared across routes      |
+| **Status**            | Legacy                             | Recommended ✅            |
 
 ---
 
@@ -382,13 +972,16 @@ export async function generateStaticParams() {
 ### Core Reserved Files
 
 #### `page.js` - Page Component
+
 ```jsx
 // Renders the page UI
 export default function Page() {
   return <div>Page content</div>;
 }
 ```
+
 **Creates a route:**
+
 ```
 app/blog/page.js → Route /blog
 ```
@@ -396,6 +989,7 @@ app/blog/page.js → Route /blog
 ---
 
 #### `layout.js` - Layout Wrapper
+
 ```jsx
 // Wraps all child pages
 export default function RootLayout({ children }) {
@@ -406,7 +1000,9 @@ export default function RootLayout({ children }) {
   );
 }
 ```
+
 **Applies to:**
+
 ```
 app/layout.js       → All pages
 app/blog/layout.js  → Pages under /blog
@@ -415,8 +1011,9 @@ app/blog/layout.js  → Pages under /blog
 ---
 
 #### `error.js` - Error Boundary
+
 ```jsx
-'use client';
+"use client";
 
 export default function Error({ error, reset }) {
   return (
@@ -428,7 +1025,9 @@ export default function Error({ error, reset }) {
   );
 }
 ```
+
 **Catches:**
+
 ```
 Errors in child pages and layouts
 ```
@@ -436,15 +1035,18 @@ Errors in child pages and layouts
 ---
 
 #### `not-found.js` - 404 Page
+
 ```jsx
 export default function NotFound() {
   return <h1>404 - Page not found</h1>;
 }
 ```
+
 **Created from:**
+
 ```jsx
 // In page.js
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 
 export default function Page({ params }) {
   if (!post) {
@@ -456,12 +1058,15 @@ export default function Page({ params }) {
 ---
 
 #### `loading.js` - Suspense Fallback
+
 ```jsx
 export default function Loading() {
   return <div>Loading...</div>;
 }
 ```
+
 **Shows while:**
+
 ```
 Page is rendering (streaming)
 Wrapped in <Suspense>
@@ -470,9 +1075,10 @@ Wrapped in <Suspense>
 ---
 
 #### `route.js` - API Route
+
 ```jsx
 export async function GET(request) {
-  return Response.json({ hello: 'world' });
+  return Response.json({ hello: "world" });
 }
 
 export async function POST(request) {
@@ -480,7 +1086,9 @@ export async function POST(request) {
   return Response.json({ received: body });
 }
 ```
+
 **Creates API endpoint:**
+
 ```
 app/api/hello/route.js → /api/hello
 ```
@@ -488,11 +1096,12 @@ app/api/hello/route.js → /api/hello
 ---
 
 #### `template.js` - Route Template
+
 ```jsx
 // Like layout but re-mounts on navigation
 export default function Template({ children }) {
   const [count, setCount] = useState(0);
-  
+
   return (
     <div>
       <button onClick={() => setCount(count + 1)}>Count: {count}</button>
@@ -501,7 +1110,9 @@ export default function Template({ children }) {
   );
 }
 ```
+
 **Difference from layout:**
+
 ```
 layout.js   - Persists across navigations
 template.js - Re-mounts on each navigation
@@ -510,9 +1121,10 @@ template.js - Re-mounts on each navigation
 ---
 
 #### `middleware.js` - Request Handler
+
 ```jsx
 // At root of project or in src/
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 export function middleware(request) {
   // Add CORS headers, authentication, etc
@@ -520,25 +1132,27 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: ["/api/:path*"],
 };
 ```
 
 ---
 
 #### `instrumentation.ts` - Lifecycle
+
 ```jsx
 // Runs when server starts
 export async function register() {
-  console.log('Server initialized');
+  console.log("Server initialized");
 }
 ```
 
 ---
 
 #### `global-error.js` - Root Error
+
 ```jsx
-'use client';
+"use client";
 
 export default function GlobalError({ error, reset }) {
   return (
@@ -563,13 +1177,9 @@ app/
 ```
 
 **Usage in layout:**
+
 ```jsx
-export default function Layout({
-  children,
-  metrics,
-  notifications,
-  sidebar
-}) {
+export default function Layout({ children, metrics, notifications, sidebar }) {
   return (
     <div>
       {metrics}
@@ -587,17 +1197,19 @@ export default function Layout({
 ### Server Components (Default)
 
 **What they are:**
+
 ```jsx
 // app/page.js - Server Component by default
 export default async function Page() {
-  const data = await fetch('https://api.example.com/data');
+  const data = await fetch("https://api.example.com/data");
   const result = await data.json();
-  
+
   return <div>{result.title}</div>;
 }
 ```
 
 **Characteristics:**
+
 - ✅ Can access databases directly
 - ✅ Keep sensitive data secure
 - ✅ Reduce client bundle size
@@ -607,6 +1219,7 @@ export default async function Page() {
 - ❌ Cannot use hooks (useState, useEffect)
 
 **Use When:**
+
 - Fetching data
 - Accessing secure data
 - Large dependencies needed
@@ -617,23 +1230,21 @@ export default async function Page() {
 ### Client Components
 
 **How to mark:**
-```jsx
-'use client';  // Always at top
 
-import { useState } from 'react';
+```jsx
+"use client"; // Always at top
+
+import { useState } from "react";
 
 export default function Counter() {
   const [count, setCount] = useState(0);
-  
-  return (
-    <button onClick={() => setCount(count + 1)}>
-      Count: {count}
-    </button>
-  );
+
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
 }
 ```
 
 **Characteristics:**
+
 - ✅ Can use hooks (useState, useEffect)
 - ✅ Can use browser APIs
 - ✅ Can use event listeners
@@ -642,6 +1253,7 @@ export default function Counter() {
 - ❌ Increases client bundle
 
 **Use When:**
+
 - Need interactivity
 - Need hooks
 - Need browser APIs
@@ -652,13 +1264,14 @@ export default function Counter() {
 ### Mixing Server and Client
 
 **Best Practice:**
+
 ```jsx
 // app/page.js (Server Component)
-import ClientCard from './card';
+import ClientCard from "./card";
 
 export default async function Page() {
   const data = await fetchData(); // Server-only
-  
+
   return (
     <div>
       <ServerInfo data={data} />
@@ -674,21 +1287,24 @@ function ServerInfo({ data }) {
 ```
 
 **Client Component:**
+
 ```jsx
 // app/card.js
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function ClientCard({ onClick }) {
   const [selected, setSelected] = useState(false);
-  
+
   return (
-    <div onClick={() => {
-      setSelected(!selected);
-      onClick?.();
-    }}>
-      {selected ? 'Selected' : 'Click me'}
+    <div
+      onClick={() => {
+        setSelected(!selected);
+        onClick?.();
+      }}
+    >
+      {selected ? "Selected" : "Click me"}
     </div>
   );
 }
@@ -699,11 +1315,12 @@ export default function ClientCard({ onClick }) {
 ### useClient vs useServer
 
 #### useClient
+
 ```jsx
 // Explicit Client Component
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function Component() {
   const [count, setCount] = useState(0);
@@ -712,6 +1329,7 @@ export default function Component() {
 ```
 
 #### useServer (Not needed - default)
+
 ```jsx
 // No directive = Server Component by default
 export default async function Page() {
@@ -727,6 +1345,7 @@ export default async function Page() {
 ### 1. CSS Modules (Recommended)
 
 **Create CSS Module:**
+
 ```css
 /* app/page.module.css */
 .container {
@@ -742,9 +1361,10 @@ export default async function Page() {
 ```
 
 **Use in Component:**
+
 ```jsx
 // app/page.js
-import styles from './page.module.css';
+import styles from "./page.module.css";
 
 export default function Page() {
   return (
@@ -756,6 +1376,7 @@ export default function Page() {
 ```
 
 **Benefits:**
+
 - ✅ Scoped to component
 - ✅ No class name conflicts
 - ✅ Better for maintenance
@@ -765,6 +1386,7 @@ export default function Page() {
 ### 2. Global CSS
 
 **Create CSS:**
+
 ```css
 /* app/globals.css */
 * {
@@ -779,9 +1401,10 @@ body {
 ```
 
 **Import in root layout:**
+
 ```jsx
 // app/layout.js
-import './globals.css';
+import "./globals.css";
 
 export default function RootLayout({ children }) {
   return (
@@ -797,18 +1420,17 @@ export default function RootLayout({ children }) {
 ### 3. Tailwind CSS (Popular)
 
 **Install:**
+
 ```bash
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 
 **Configure (tailwind.config.js):**
+
 ```js
 export default {
-  content: [
-    './app/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {},
   },
@@ -817,6 +1439,7 @@ export default {
 ```
 
 **Use:**
+
 ```jsx
 export default function Page() {
   return (
@@ -832,15 +1455,17 @@ export default function Page() {
 ### 4. Styled Components (CSS-in-JS)
 
 **Install:**
+
 ```bash
 npm install styled-components
 ```
 
 **Use:**
-```jsx
-'use client';
 
-import styled from 'styled-components';
+```jsx
+"use client";
+
+import styled from "styled-components";
 
 const StyledContainer = styled.div`
   max-width: 1200px;
@@ -869,6 +1494,7 @@ export default function Page() {
 ### Basic Dynamic Routes
 
 **File Structure:**
+
 ```
 app/
   posts/
@@ -877,16 +1503,18 @@ app/
 ```
 
 **Access param:**
+
 ```jsx
 // app/posts/[slug]/page.js
 export default function Post({ params }) {
   const { slug } = params;
-  
+
   return <h1>Post: {slug}</h1>;
 }
 ```
 
 **URL Examples:**
+
 ```
 /posts/hello-world      → params.slug = "hello-world"
 /posts/learn-nextjs     → params.slug = "learn-nextjs"
@@ -897,6 +1525,7 @@ export default function Post({ params }) {
 ### Multiple Dynamic Segments
 
 **File Structure:**
+
 ```
 app/
   blog/
@@ -907,15 +1536,21 @@ app/
 ```
 
 **Access params:**
+
 ```jsx
 export default function Post({ params }) {
   const { year, month, day } = params;
-  
-  return <h1>{year}/{month}/{day}</h1>;
+
+  return (
+    <h1>
+      {year}/{month}/{day}
+    </h1>
+  );
 }
 ```
 
 **URL:**
+
 ```
 /blog/2024/03/11
 params = { year: "2024", month: "03", day: "11" }
@@ -926,6 +1561,7 @@ params = { year: "2024", month: "03", day: "11" }
 ### Catch-All Routes
 
 **File Structure:**
+
 ```
 app/
   docs/
@@ -934,15 +1570,17 @@ app/
 ```
 
 **Access param:**
+
 ```jsx
 export default function Docs({ params }) {
   const { slug } = params; // Array
-  
-  return <h1>Path: {slug.join('/')}</h1>;
+
+  return <h1>Path: {slug.join("/")}</h1>;
 }
 ```
 
 **URLs:**
+
 ```
 /docs/getting-started           → slug = ["getting-started"]
 /docs/api/reference/get-user    → slug = ["api", "reference", "get-user"]
@@ -953,6 +1591,7 @@ export default function Docs({ params }) {
 ### Optional Catch-All
 
 **File Structure:**
+
 ```
 app/
   docs/
@@ -961,6 +1600,7 @@ app/
 ```
 
 **URLs:**
+
 ```
 /docs                           → slug = undefined
 /docs/api/reference             → slug = ["api", "reference"]
@@ -976,9 +1616,9 @@ app/
 export async function generateStaticParams() {
   // Fetch all posts at build time
   const posts = await getAllPosts();
-  
-  return posts.map(post => ({
-    slug: post.slug
+
+  return posts.map((post) => ({
+    slug: post.slug,
   }));
 }
 
@@ -994,25 +1634,27 @@ export default function Post({ params }) {
 ### Server Actions (Recommended)
 
 **Define Server Action:**
+
 ```jsx
 // app/actions.js
-'use server';
+"use server";
 
 export async function submitForm(formData) {
-  const name = formData.get('name');
-  const email = formData.get('email');
-  
+  const name = formData.get("name");
+  const email = formData.get("email");
+
   // Save to database
   await saveUser({ name, email });
-  
-  return { success: true, message: 'Saved!' };
+
+  return { success: true, message: "Saved!" };
 }
 ```
 
 **Use in Form:**
+
 ```jsx
 // app/page.js
-import { submitForm } from './actions';
+import { submitForm } from "./actions";
 
 export default function Page() {
   return (
@@ -1028,18 +1670,16 @@ export default function Page() {
 ### useFormStatus Hook
 
 ```jsx
-'use client';
+"use client";
 
-import { useFormStatus } from 'react-dom';
-import { submitForm } from './actions';
+import { useFormStatus } from "react-dom";
+import { submitForm } from "./actions";
 
 export default function SubmitButton() {
   const { pending } = useFormStatus();
-  
+
   return (
-    <button disabled={pending}>
-      {pending ? 'Submitting...' : 'Submit'}
-    </button>
+    <button disabled={pending}>{pending ? "Submitting..." : "Submit"}</button>
   );
 }
 ```
@@ -1049,22 +1689,22 @@ export default function SubmitButton() {
 ### useFormState Hook
 
 ```jsx
-'use client';
+"use client";
 
-import { useFormState } from 'react-dom';
-import { submitForm } from './actions';
+import { useFormState } from "react-dom";
+import { submitForm } from "./actions";
 
 export default function Form() {
   const [state, formAction] = useFormState(submitForm, null);
-  
+
   return (
     <form action={formAction}>
       <input type="text" name="name" required />
       <input type="email" name="email" required />
       <button type="submit">Submit</button>
-      
+
       {state?.message && <p>{state.message}</p>}
-      {state?.error && <p style={{ color: 'red' }}>{state.error}</p>}
+      {state?.error && <p style={{ color: "red" }}>{state.error}</p>}
     </form>
   );
 }
@@ -1075,33 +1715,30 @@ export default function Form() {
 ### useTransition Hook (Client-Side)
 
 ```jsx
-'use client';
+"use client";
 
-import { useTransition, useState } from 'react';
+import { useTransition, useState } from "react";
 
 export default function Form() {
   const [isPending, startTransition] = useTransition();
-  const [input, setInput] = useState('');
-  
+  const [input, setInput] = useState("");
+
   function handleSubmit(e) {
     e.preventDefault();
-    
+
     startTransition(async () => {
       const result = await submitData(input);
       if (result.success) {
-        setInput('');
+        setInput("");
       }
     });
   }
-  
+
   return (
     <form onSubmit={handleSubmit}>
-      <input 
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
       <button disabled={isPending}>
-        {isPending ? 'Loading...' : 'Submit'}
+        {isPending ? "Loading..." : "Submit"}
       </button>
     </form>
   );
@@ -1113,41 +1750,45 @@ export default function Form() {
 ### React Form Hooks
 
 **Install react-hook-form:**
+
 ```bash
 npm install react-hook-form
 ```
 
 **Use:**
-```jsx
-'use client';
 
-import { useForm } from 'react-hook-form';
+```jsx
+"use client";
+
+import { useForm } from "react-hook-form";
 
 export default function Form() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
   async function onSubmit(data) {
     const result = await submitForm(data);
   }
-  
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        {...register('name', { required: 'Name is required' })}
-      />
+      <input {...register("name", { required: "Name is required" })} />
       {errors.name && <span>{errors.name.message}</span>}
-      
+
       <input
-        {...register('email', {
-          required: 'Email is required',
+        {...register("email", {
+          required: "Email is required",
           pattern: {
             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-            message: 'Invalid email'
-          }
+            message: "Invalid email",
+          },
         })}
       />
       {errors.email && <span>{errors.email.message}</span>}
-      
+
       <button type="submit">Submit</button>
     </form>
   );
@@ -1165,8 +1806,8 @@ export default function Form() {
 ```jsx
 // Same fetch called multiple times = executed once
 export default async function Page() {
-  const data1 = await fetch('https://api.example.com/user');
-  const data2 = await fetch('https://api.example.com/user');
+  const data1 = await fetch("https://api.example.com/user");
+  const data2 = await fetch("https://api.example.com/user");
   // Only one request made (automatically memoized)
 }
 ```
@@ -1177,22 +1818,24 @@ export default async function Page() {
 
 ```jsx
 // Cached by default in production
-const data = await fetch('https://api.example.com/posts');
+const data = await fetch("https://api.example.com/posts");
 ```
 
 **Opt-out of caching:**
+
 ```jsx
-const data = await fetch('https://api.example.com/posts', {
-  cache: 'no-store' // Fetch every time
+const data = await fetch("https://api.example.com/posts", {
+  cache: "no-store", // Fetch every time
 });
 ```
 
 **Set cache duration:**
+
 ```jsx
 export const revalidate = 60; // Cache for 60 seconds
 
 export default async function Page() {
-  const data = await fetch('https://api.example.com/posts');
+  const data = await fetch("https://api.example.com/posts");
   return <div>{/* ... */}</div>;
 }
 ```
@@ -1216,30 +1859,32 @@ export default async function Post({ params }) {
 ### On-Demand Revalidation
 
 **Revalidate specific path:**
+
 ```jsx
 // app/api/revalidate/route.js
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 
 export async function POST(request) {
   const path = await request.json();
-  
+
   revalidatePath(path);
   return Response.json({ revalidated: true });
 }
 ```
 
 **Revalidate tag:**
+
 ```jsx
 // app/page.js
-const data = await fetch('https://api.example.com/posts', {
-  next: { tags: ['posts'] }
+const data = await fetch("https://api.example.com/posts", {
+  next: { tags: ["posts"] },
 });
 
 // app/api/revalidate/route.js
-import { revalidateTag } from 'next/cache';
+import { revalidateTag } from "next/cache";
 
 export async function POST() {
-  revalidateTag('posts');
+  revalidateTag("posts");
   return Response.json({ revalidated: true });
 }
 ```
@@ -1253,19 +1898,23 @@ export async function POST() {
 ```jsx
 // app/layout.js
 export const metadata = {
-  title: 'My App',
-  description: 'Welcome to my app',
-  keywords: ['nextjs', 'react'],
+  title: "My App",
+  description: "Welcome to my app",
+  keywords: ["nextjs", "react"],
   openGraph: {
-    title: 'My App',
-    description: 'Welcome',
-    url: 'https://myapp.com',
-    images: [{ url: 'https://myapp.com/og.png' }]
-  }
+    title: "My App",
+    description: "Welcome",
+    url: "https://myapp.com",
+    images: [{ url: "https://myapp.com/og.png" }],
+  },
 };
 
 export default function Layout({ children }) {
-  return <html><body>{children}</body></html>;
+  return (
+    <html>
+      <body>{children}</body>
+    </html>
+  );
 }
 ```
 
@@ -1278,15 +1927,15 @@ export default function Layout({ children }) {
 
 export async function generateMetadata({ params }) {
   const post = await getPost(params.slug);
-  
+
   return {
     title: post.title,
     description: post.excerpt,
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      images: [post.image]
-    }
+      images: [post.image],
+    },
   };
 }
 
@@ -1300,35 +1949,37 @@ export default function Post({ params }) {
 ### Robots & Sitemap
 
 **robots.js:**
+
 ```jsx
 // app/robots.js
 export default function robots() {
   return {
     rules: [
       {
-        userAgent: '*',
-        allow: '/',
-        disallow: '/admin'
-      }
+        userAgent: "*",
+        allow: "/",
+        disallow: "/admin",
+      },
     ],
-    sitemap: 'https://myapp.com/sitemap.xml'
+    sitemap: "https://myapp.com/sitemap.xml",
   };
 }
 ```
 
 **sitemap.js:**
+
 ```jsx
 // app/sitemap.js
 export default function sitemap() {
   return [
     {
-      url: 'https://myapp.com',
-      lastModified: new Date()
+      url: "https://myapp.com",
+      lastModified: new Date(),
     },
     {
-      url: 'https://myapp.com/about',
-      lastModified: new Date()
-    }
+      url: "https://myapp.com/about",
+      lastModified: new Date(),
+    },
   ];
 }
 ```
@@ -1341,16 +1992,14 @@ export default function sitemap() {
 
 ```jsx
 // app/error.js
-'use client';
+"use client";
 
 export default function Error({ error, reset }) {
   return (
     <div>
       <h1>Something went wrong!</h1>
       <p>{error.message}</p>
-      <button onClick={() => reset()}>
-        Try again
-      </button>
+      <button onClick={() => reset()}>Try again</button>
     </div>
   );
 }
@@ -1373,17 +2022,18 @@ export default function NotFound() {
 ```
 
 **Trigger from page:**
+
 ```jsx
 // app/posts/[slug]/page.js
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 
 export default async function Post({ params }) {
   const post = await getPost(params.slug);
-  
+
   if (!post) {
     notFound(); // Shows not-found.js
   }
-  
+
   return <article>{post.content}</article>;
 }
 ```
@@ -1394,15 +2044,15 @@ export default async function Post({ params }) {
 
 ```jsx
 // Redirect to another page
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   const user = await getUser();
-  
+
   if (!user) {
-    redirect('/login'); // Redirect to login
+    redirect("/login"); // Redirect to login
   }
-  
+
   return <div>User: {user.name}</div>;
 }
 ```
@@ -1414,12 +2064,12 @@ export default async function Page() {
 ```jsx
 export default async function Page() {
   try {
-    const data = await fetch('https://api.example.com/data');
-    
+    const data = await fetch("https://api.example.com/data");
+
     if (!data.ok) {
       throw new Error(`API error: ${data.status}`);
     }
-    
+
     const result = await data.json();
     return <div>{result.title}</div>;
   } catch (error) {
@@ -1434,56 +2084,57 @@ export default async function Page() {
 
 ### File & Folder Naming
 
-| Pattern | Meaning | Example |
-|---------|---------|---------|
-| `page.js` | **Route page** - creates a route | `app/blog/page.js` → `/blog` |
-| `layout.js` | **Layout wrapper** - wraps children | `app/layout.js` wraps all |
-| `error.js` | **Error boundary** - catches errors | Error fallback UI |
-| `not-found.js` | **404 page** - missing routes | Show 404 UI |
-| `loading.js` | **Suspense fallback** - during render | Loading skeleton |
-| `route.js` | **API route** - handle requests | `app/api/users/route.js` |
-| `template.js` | **Route template** - re-mounts on nav | Like layout but resets |
-| `middleware.js` | **Request handler** - intercepts requests | Auth, CORS, etc |
-| `instrumentation.ts` | **Lifecycle hook** - server startup | Initialize services |
-| `global-error.js` | **Root error** - catches root errors | Global error boundary |
+| Pattern              | Meaning                                   | Example                      |
+| -------------------- | ----------------------------------------- | ---------------------------- |
+| `page.js`            | **Route page** - creates a route          | `app/blog/page.js` → `/blog` |
+| `layout.js`          | **Layout wrapper** - wraps children       | `app/layout.js` wraps all    |
+| `error.js`           | **Error boundary** - catches errors       | Error fallback UI            |
+| `not-found.js`       | **404 page** - missing routes             | Show 404 UI                  |
+| `loading.js`         | **Suspense fallback** - during render     | Loading skeleton             |
+| `route.js`           | **API route** - handle requests           | `app/api/users/route.js`     |
+| `template.js`        | **Route template** - re-mounts on nav     | Like layout but resets       |
+| `middleware.js`      | **Request handler** - intercepts requests | Auth, CORS, etc              |
+| `instrumentation.ts` | **Lifecycle hook** - server startup       | Initialize services          |
+| `global-error.js`    | **Root error** - catches root errors      | Global error boundary        |
 
 ---
 
 ### Dynamic Segments
 
-| Pattern | Meaning | URL Match |
-|---------|---------|-----------|
-| `[id]` | **Single dynamic segment** | `/posts/123` |
-| `[id]/[name]` | **Multiple segments** | `/posts/123/hello` |
-| `[...slug]` | **Catch-all route** | `/docs/a/b/c` |
-| `[[...slug]]` | **Optional catch-all** | `/docs` or `/docs/a/b` |
+| Pattern       | Meaning                    | URL Match              |
+| ------------- | -------------------------- | ---------------------- |
+| `[id]`        | **Single dynamic segment** | `/posts/123`           |
+| `[id]/[name]` | **Multiple segments**      | `/posts/123/hello`     |
+| `[...slug]`   | **Catch-all route**        | `/docs/a/b/c`          |
+| `[[...slug]]` | **Optional catch-all**     | `/docs` or `/docs/a/b` |
 
 ---
 
 ### Parallel Routes
 
-| Pattern | Meaning | Usage |
-|---------|---------|-------|
-| `@slot` | **Named slot** | `@metrics`, `@sidebar` |
-| `@slot/page.js` | **Slot page** | Route for specific slot |
-| `@slot/default.js` | **Slot default** | Shows when no match |
+| Pattern            | Meaning          | Usage                   |
+| ------------------ | ---------------- | ----------------------- |
+| `@slot`            | **Named slot**   | `@metrics`, `@sidebar`  |
+| `@slot/page.js`    | **Slot page**    | Route for specific slot |
+| `@slot/default.js` | **Slot default** | Shows when no match     |
 
 ---
 
 ### Advanced Patterns
 
-| Pattern | Meaning |
-|---------|---------|
+| Pattern   | Meaning                                         |
+| --------- | ----------------------------------------------- |
 | `(group)` | **Route group** - organize without changing URL |
-| `(auth)` | Example: `/auth/login` becomes `/login` |
-| `_folder` | **Private folder** - excluded from routing |
-| `.hidden` | **Dot files** - completely ignored |
+| `(auth)`  | Example: `/auth/login` becomes `/login`         |
+| `_folder` | **Private folder** - excluded from routing      |
+| `.hidden` | **Dot files** - completely ignored              |
 
 ---
 
 ## Quick Reference Links
 
 📚 **Official Documentation:**
+
 - Next.js Docs: https://nextjs.org/docs
 - App Router: https://nextjs.org/docs/app
 - Server Components: https://nextjs.org/docs/app/building-your-application/rendering/server-components
@@ -1492,10 +2143,12 @@ export default async function Page() {
 - Caching: https://nextjs.org/docs/app/building-your-application/caching
 
 🎓 **Learning Resources:**
+
 - Next.js Learn: https://nextjs.org/learn
 - Next.js Examples: https://github.com/vercel/next.js/tree/canary/examples
 
 🛠️ **Tools & Libraries:**
+
 - React Hook Form: https://react-hook-form.com/
 - Tailwind CSS: https://tailwindcss.com/
 - Styled Components: https://styled-components.com/
@@ -1505,6 +2158,7 @@ export default async function Page() {
 ## Summary
 
 **Next.js** is a powerful React framework that provides:
+
 - 🚀 Multiple rendering strategies (SSR, SSG, CSR, ISR)
 - 🛣️ File-based routing with dynamic segments
 - 📦 Server Components by default
@@ -1515,6 +2169,7 @@ export default async function Page() {
 - 📋 Form handling with Server Actions
 
 **Best Practices:**
+
 1. Use Server Components by default
 2. Only use 'use client' when needed
 3. Implement proper error handling
